@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { collection, getDocs } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import ParallaxScrollView from '@/components/parallax-scroll-view';
@@ -24,35 +24,43 @@ export default function HomeScreen() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, 'products'));
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Product[];
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-      setLoading(false);
-    };
-
-    fetchProducts();
+  const fetchProducts = useCallback(async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'products'));
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Product[];
+      setProducts(data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchProducts().then(() => setLoading(false));
+  }, [fetchProducts]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchProducts();
+    setRefreshing(false);
+  }, [fetchProducts]);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#DDF3F5', dark: '#0B2E4F' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/logo.jpg')}
-          style={styles.reactLogo}
-          contentFit="contain"
-        />
-      }>
+   <ParallaxScrollView
+  headerBackgroundColor={{ light: '#DDF3F5', dark: '#0B2E4F' }}
+  refreshing={refreshing}
+  onRefresh={onRefresh}
+  headerImage={
+    <Image
+      source={require('@/assets/images/logo.jpg')}
+      style={styles.reactLogo}
+      contentFit="contain"
+    />
+  }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Mountain Park Spring Water</ThemedText>
       </ThemedView>
