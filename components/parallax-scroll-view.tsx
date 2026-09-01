@@ -10,6 +10,7 @@ import Animated, {
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const HEADER_HEIGHT = 250;
 
@@ -58,14 +59,17 @@ export default function ParallaxScrollView({
           <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} colors={['#1595B3']} />
         ) : undefined
       }>
-      <Animated.View
-        style={[
-          styles.header,
-          { backgroundColor: headerBackgroundColor[colorScheme] },
-          headerAnimatedStyle,
-        ]}>
-        {headerImage}
-      </Animated.View>
+      <Animated.View style={[styles.header, headerAnimatedStyle]}>
+  <LinearGradient
+    colors={
+      colorScheme === 'dark'
+        ? ['#0B2E4F', '#1595B3']
+        : ['#DDF3F5', '#A1CEDC']
+    }
+    style={StyleSheet.absoluteFill}
+  />
+  {headerImage}
+</Animated.View>
       <ThemedView style={styles.content}>{children}</ThemedView>
     </Animated.ScrollView>
   );

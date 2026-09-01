@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } f
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { AnimatedButton } from '@/components/animated-button';
 import { useAuth } from '@/context/auth-context';
 import { auth } from '@/firebase/config';
 
@@ -89,9 +90,9 @@ export default function AccountScreen() {
         <Text style={styles.title}>You&apos;re Logged In</Text>
         <Text style={styles.subtitle}>{user.email}</Text>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+        <AnimatedButton style={styles.button} onPress={handleLogout}>
           <Text style={styles.buttonText}>Log Out</Text>
-        </TouchableOpacity>
+        </AnimatedButton>
       </View>
     );
   }
@@ -120,12 +121,12 @@ export default function AccountScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity
+      <AnimatedButton
         style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleLogin}
         disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Log In'}</Text>
-      </TouchableOpacity>
+      </AnimatedButton>
 
       <TouchableOpacity onPress={handleSignUp} disabled={loading}>
         <Text style={styles.link}>Don&apos;t have an account? Sign up</Text>

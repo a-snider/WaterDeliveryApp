@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1A1A1A',
+    color: '#383737',
   },
   badge: {
     borderRadius: 20,
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   items: {
     fontSize: 14,
-    color: '#333',
+    color: '#302e2e',
     marginBottom: 4,
   },
   total: {

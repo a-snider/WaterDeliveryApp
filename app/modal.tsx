@@ -1,7 +1,9 @@
 import { useRouter } from 'expo-router';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { AnimatedButton } from '@/components/animated-button';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { db } from '@/firebase/config';
@@ -10,6 +12,7 @@ export default function CartScreen() {
   const { items, removeFromCart, clearCart, total } = useCart();
   const { user } = useAuth();
   const router = useRouter();
+  const [instructions, setInstructions] = useState('');
 
   const handlePlaceOrder = async () => {
     if (!user) {
@@ -33,10 +36,12 @@ export default function CartScreen() {
         })),
         total,
         status: 'Scheduled',
+        deliveryInstructions: instructions.trim(),
         createdAt: serverTimestamp(),
       });
 
       clearCart();
+      setInstructions('');
       Alert.alert('Order Placed!', 'Your order has been submitted.');
       router.back();
     } catch (error: any) {
@@ -70,11 +75,22 @@ export default function CartScreen() {
         />
       )}
 
+      <Text style={styles.label}>Delivery Instructions (optional)</Text>
+      <TextInput
+        style={styles.instructionsInput}
+        placeholder="e.g. Leave by the garage, gate code, etc."
+        placeholderTextColor="#888"
+        value={instructions}
+        onChangeText={setInstructions}
+        multiline
+        numberOfLines={3}
+      />
+
       <Text style={styles.total}>Total: ${total.toFixed(2)}</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handlePlaceOrder}>
+      <AnimatedButton style={styles.button} onPress={handlePlaceOrder}>
         <Text style={styles.buttonText}>Place Order</Text>
-      </TouchableOpacity>
+      </AnimatedButton>
     </View>
   );
 }
@@ -88,7 +104,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0B2E4F',
+    color: '#1595B3',
     marginBottom: 20,
   },
   empty: {
@@ -107,7 +123,7 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1A1A1A',
+    color: '#333',
   },
   itemDetail: {
     fontSize: 14,
@@ -118,10 +134,28 @@ const styles = StyleSheet.create({
     color: '#C0392B',
     fontSize: 14,
   },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1595B3',
+    marginBottom: 6,
+  },
+  instructionsInput: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+    fontSize: 14,
+    color: '#000',
+    backgroundColor: '#FFF',
+    textAlignVertical: 'top',
+  },
   total: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#0B2E4F',
+    color: '#1595B3',
     marginTop: 20,
     marginBottom: 12,
   },

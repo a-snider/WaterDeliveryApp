@@ -2,8 +2,15 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { collection, getDocs } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Linking,
+  StyleSheet,
+  Text,
+} from 'react-native';
 
+import { AnimatedButton } from '@/components/animated-button';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ProductCard } from '@/components/product-card';
 import { ThemedText } from '@/components/themed-text';
@@ -50,24 +57,30 @@ export default function HomeScreen() {
   }, [fetchProducts]);
 
   return (
-   <ParallaxScrollView
-  headerBackgroundColor={{ light: '#DDF3F5', dark: '#0B2E4F' }}
-  refreshing={refreshing}
-  onRefresh={onRefresh}
-  headerImage={
-    <Image
-      source={require('@/assets/images/logo.jpg')}
-      style={styles.reactLogo}
-      contentFit="contain"
-    />
-  }>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#DDF3F5', dark: '#0B2E4F' }}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      headerImage={
+        <Image
+          source={require('@/assets/images/logo.jpg')}
+          style={styles.reactLogo}
+          contentFit="contain"
+        />
+      }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Mountain Park Spring Water</ThemedText>
       </ThemedView>
 
-      <TouchableOpacity style={styles.cartButton} onPress={() => router.push('/modal')}>
+      <AnimatedButton
+        style={styles.websiteButton}
+        onPress={() => Linking.openURL('https://mountainparkwater.com/')}>
+        <Text style={styles.websiteButtonText}>Visit Our Website</Text>
+      </AnimatedButton>
+
+      <AnimatedButton style={styles.cartButton} onPress={() => router.push('/modal')}>
         <Text style={styles.cartButtonText}>View Cart ({totalItems})</Text>
-      </TouchableOpacity>
+      </AnimatedButton>
 
       {loading ? (
         <ActivityIndicator size="large" color="#1595B3" style={{ marginTop: 40 }} />
@@ -99,6 +112,18 @@ const styles = StyleSheet.create({
     height: 250,
     width: 250,
     alignSelf: 'center',
+  },
+  websiteButton: {
+    backgroundColor: '#0B2E4F',
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  websiteButtonText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   cartButton: {
     backgroundColor: '#1595B3',

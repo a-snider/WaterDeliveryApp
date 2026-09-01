@@ -1,7 +1,8 @@
 import { Image } from 'expo-image';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Product } from '@/app/(tabs)/index';
+import { AnimatedButton } from '@/components/animated-button';
 import { useCart } from '@/context/cart-context';
 
 export function ProductCard({ product }: { product: Product }) {
@@ -16,9 +17,9 @@ export function ProductCard({ product }: { product: Product }) {
       />
       <Text style={styles.name}>{product.name}</Text>
       <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-      <TouchableOpacity style={styles.button} onPress={() => addToCart(product as any)}>
+      <AnimatedButton style={styles.button} onPress={() => addToCart(product as any)}>
         <Text style={styles.buttonText}>Add to Order</Text>
-      </TouchableOpacity>
+      </AnimatedButton>
     </View>
   );
 }
