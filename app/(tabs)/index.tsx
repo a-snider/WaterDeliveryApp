@@ -20,7 +20,7 @@ export type Product = {
 };
 
 export default function HomeScreen() {
-  const { items } = useCart();
+  const { items, totalItems } = useCart();
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,11 +58,15 @@ export default function HomeScreen() {
       </ThemedView>
 
       <TouchableOpacity style={styles.cartButton} onPress={() => router.push('/modal')}>
-        <Text style={styles.cartButtonText}>View Cart ({items.length})</Text>
+        <Text style={styles.cartButtonText}>View Cart ({totalItems})</Text>
       </TouchableOpacity>
 
       {loading ? (
         <ActivityIndicator size="large" color="#1595B3" style={{ marginTop: 40 }} />
+      ) : products.length === 0 ? (
+        <Text style={{ textAlign: 'center', marginTop: 40, color: '#666' }}>
+          No products available right now.
+        </Text>
       ) : (
         <FlatList
           data={products}
