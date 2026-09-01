@@ -1,23 +1,29 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Order } from '@/constants/orders';
+import { FirestoreOrder } from '@/app/(tabs)/explore';
 
-const STATUS_COLORS: Record<Order['status'], string> = {
+const STATUS_COLORS: Record<string, string> = {
   Delivered: '#2E8B57',
   'Out for Delivery': '#D98E04',
   Scheduled: '#1595B3',
 };
 
-export function OrderCard({ order }: { order: Order }) {
+export function OrderCard({ order }: { order: FirestoreOrder }) {
+  const dateLabel = order.createdAt?.toDate
+    ? order.createdAt.toDate().toLocaleDateString()
+    : 'Pending';
+
+  const itemsLabel = order.items.map((i) => `${i.quantity}x ${i.name}`).join(', ');
+
   return (
     <View style={styles.card}>
       <View style={styles.row}>
-        <Text style={styles.date}>{order.date}</Text>
-        <View style={[styles.badge, { backgroundColor: STATUS_COLORS[order.status] }]}>
+        <Text style={styles.date}>{dateLabel}</Text>
+        <View style={[styles.badge, { backgroundColor: STATUS_COLORS[order.status] || '#999' }]}>
           <Text style={styles.badgeText}>{order.status}</Text>
         </View>
       </View>
-      <Text style={styles.items}>{order.items}</Text>
+      <Text style={styles.items}>{itemsLabel}</Text>
       <Text style={styles.total}>${order.total.toFixed(2)}</Text>
     </View>
   );
