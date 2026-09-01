@@ -3,10 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Product } from '@/app/(tabs)/index';
 import { AnimatedButton } from '@/components/animated-button';
+import { useToast } from '@/components/toast';
 import { useCart } from '@/context/cart-context';
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   return (
     <View style={styles.card}>
@@ -17,7 +19,12 @@ export function ProductCard({ product }: { product: Product }) {
       />
       <Text style={styles.name}>{product.name}</Text>
       <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-      <AnimatedButton style={styles.button} onPress={() => addToCart(product as any)}>
+      <AnimatedButton
+        style={styles.button}
+        onPress={() => {
+          addToCart(product as any);
+          showToast(product.name + ' added to cart');
+        }}>
         <Text style={styles.buttonText}>Add to Order</Text>
       </AnimatedButton>
     </View>

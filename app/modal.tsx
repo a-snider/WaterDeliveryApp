@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { AnimatedButton } from '@/components/animated-button';
+import { OrderSuccess } from '@/components/order-success';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { db } from '@/firebase/config';
@@ -13,6 +14,7 @@ export default function CartScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const [instructions, setInstructions] = useState('');
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   const handlePlaceOrder = async () => {
     if (!user) {
@@ -42,19 +44,26 @@ export default function CartScreen() {
 
       clearCart();
       setInstructions('');
-      Alert.alert('Order Placed!', 'Your order has been submitted.');
-      router.back();
+      setOrderPlaced(true);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
   };
+
+  if (orderPlaced) {
+    return <OrderSuccess onDone={() => router.back()} />;
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Cart</Text>
 
       {items.length === 0 ? (
-        <Text style={styles.empty}>Your cart is empty.</Text>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyIcon}>🛒</Text>
+          <Text style={styles.emptyTitle}>Your cart is empty</Text>
+          <Text style={styles.emptySubtitle}>Add some products to get started!</Text>
+        </View>
       ) : (
         <FlatList
           data={items}
@@ -75,22 +84,26 @@ export default function CartScreen() {
         />
       )}
 
-      <Text style={styles.label}>Delivery Instructions (optional)</Text>
-      <TextInput
-        style={styles.instructionsInput}
-        placeholder="e.g. Leave by the garage, gate code, etc."
-        placeholderTextColor="#888"
-        value={instructions}
-        onChangeText={setInstructions}
-        multiline
-        numberOfLines={3}
-      />
+      {items.length > 0 && (
+        <>
+          <Text style={styles.label}>Delivery Instructions (optional)</Text>
+          <TextInput
+            style={styles.instructionsInput}
+            placeholder="e.g. Leave by the garage, gate code, etc."
+            placeholderTextColor="#888"
+            value={instructions}
+            onChangeText={setInstructions}
+            multiline
+            numberOfLines={3}
+          />
 
-      <Text style={styles.total}>Total: ${total.toFixed(2)}</Text>
+          <Text style={styles.total}>Total: ${total.toFixed(2)}</Text>
 
-      <AnimatedButton style={styles.button} onPress={handlePlaceOrder}>
-        <Text style={styles.buttonText}>Place Order</Text>
-      </AnimatedButton>
+          <AnimatedButton style={styles.button} onPress={handlePlaceOrder}>
+            <Text style={styles.buttonText}>Place Order</Text>
+          </AnimatedButton>
+        </>
+      )}
     </View>
   );
 }
@@ -107,11 +120,23 @@ const styles = StyleSheet.create({
     color: '#1595B3',
     marginBottom: 20,
   },
-  empty: {
-    fontSize: 16,
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: 60,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0B2E4F',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontSize: 14,
     color: '#666',
-    textAlign: 'center',
-    marginTop: 40,
   },
   row: {
     flexDirection: 'row',
