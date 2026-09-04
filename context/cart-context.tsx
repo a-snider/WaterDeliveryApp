@@ -1,15 +1,17 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 
-import { Product } from '@/constants/products';
+import { Product } from '@/app/(tabs)/index';
 
 export type CartItem = {
   product: Product;
   quantity: number;
+  recurring: boolean;
+  frequencyWeeks: number | null;
 };
 
 type CartContextType = {
   items: CartItem[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product, quantity: number, recurring: boolean, frequencyWeeks: number | null) => void;
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
   total: number;
@@ -28,17 +30,21 @@ const CartContext = createContext<CartContextType>({
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (
+    product: Product,
+    quantity: number,
+    recurring: boolean,
+    frequencyWeeks: number | null
+  ) => {
     setItems((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+      const existingIndex = prev.findIndex((item) => item.product.id === product.id);
+      const newItem = { product, quantity, recurring, frequencyWeeks };
+      if (existingIndex >= 0) {
+        const copy = [...prev];
+        copy[existingIndex] = newItem;
+        return copy;
       }
-      return [...prev, { product, quantity: 1 }];
+      return [...prev, newItem];
     });
   };
 

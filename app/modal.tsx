@@ -35,12 +35,29 @@ export default function CartScreen() {
           name: item.product.name,
           price: item.product.price,
           quantity: item.quantity,
+          recurring: item.recurring,
+          frequencyWeeks: item.frequencyWeeks,
         })),
         total,
         status: 'Scheduled',
         deliveryInstructions: instructions.trim(),
         createdAt: serverTimestamp(),
       });
+
+      const recurringItems = items.filter((item) => item.recurring);
+      for (const item of recurringItems) {
+        await addDoc(collection(db, 'recurringOrders'), {
+          userId: user.uid,
+          userEmail: user.email,
+          productId: item.product.id,
+          productName: item.product.name,
+          quantity: item.quantity,
+          frequencyWeeks: item.frequencyWeeks,
+          deliveryInstructions: instructions.trim(),
+          active: true,
+          createdAt: serverTimestamp(),
+        });
+      }
 
       clearCart();
       setInstructions('');
@@ -75,6 +92,12 @@ export default function CartScreen() {
                 <Text style={styles.itemDetail}>
                   Qty: {item.quantity} · ${(item.product.price * item.quantity).toFixed(2)}
                 </Text>
+                {item.recurring && (
+                  <Text style={styles.recurringTag}>
+                    🔁 Repeats every {item.frequencyWeeks} week
+                    {item.frequencyWeeks !== 1 ? 's' : ''}
+                  </Text>
+                )}
               </View>
               <TouchableOpacity onPress={() => removeFromCart(item.product.id)}>
                 <Text style={styles.remove}>Remove</Text>
@@ -154,6 +177,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     marginTop: 2,
+  },
+  recurringTag: {
+    fontSize: 12,
+    color: '#1595B3',
+    marginTop: 2,
+    fontWeight: '600',
   },
   remove: {
     color: '#C0392B',

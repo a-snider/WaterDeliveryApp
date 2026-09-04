@@ -8,7 +8,13 @@ import { db } from '@/firebase/config';
 
 export type FirestoreOrder = {
   id: string;
-  items: { name: string; price: number; quantity: number }[];
+  items: {
+    name: string;
+    price: number;
+    quantity: number;
+    recurring?: boolean;
+    frequencyWeeks?: number | null;
+  }[];
   total: number;
   status: string;
   createdAt: any;

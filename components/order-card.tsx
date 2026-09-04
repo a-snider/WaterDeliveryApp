@@ -13,8 +13,6 @@ export function OrderCard({ order }: { order: FirestoreOrder }) {
     ? order.createdAt.toDate().toLocaleDateString()
     : 'Pending';
 
-  const itemsLabel = order.items.map((i) => `${i.quantity}x ${i.name}`).join(', ');
-
   return (
     <View style={styles.card}>
       <View style={styles.row}>
@@ -23,7 +21,20 @@ export function OrderCard({ order }: { order: FirestoreOrder }) {
           <Text style={styles.badgeText}>{order.status}</Text>
         </View>
       </View>
-      <Text style={styles.items}>{itemsLabel}</Text>
+
+      {order.items.map((item, index) => (
+        <View key={index} style={styles.itemRow}>
+          <Text style={styles.items}>
+            {item.quantity}x {item.name}
+          </Text>
+          {item.recurring && (
+            <Text style={styles.recurringTag}>
+              🔁 Every {item.frequencyWeeks} week{item.frequencyWeeks !== 1 ? 's' : ''}
+            </Text>
+          )}
+        </View>
+      ))}
+
       <Text style={styles.total}>${order.total.toFixed(2)}</Text>
     </View>
   );
@@ -45,7 +56,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#383737',
+    color: '#1A1A1A',
   },
   badge: {
     borderRadius: 20,
@@ -57,14 +68,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+  itemRow: {
+    marginBottom: 4,
+  },
   items: {
     fontSize: 14,
-    color: '#302e2e',
-    marginBottom: 4,
+    color: '#4A4A4A',
+  },
+  recurringTag: {
+    fontSize: 12,
+    color: '#1595B3',
+    fontWeight: '600',
   },
   total: {
     fontSize: 16,
     fontWeight: '700',
     color: '#0B2E4F',
+    marginTop: 4,
   },
 });
