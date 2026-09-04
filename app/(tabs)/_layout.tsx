@@ -3,11 +3,15 @@ import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { STAFF_EMAILS } from '@/constants/staff';
 import { Colors } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { user } = useAuth();
+  const isStaff = !!user?.email && STAFF_EMAILS.includes(user.email);
 
   return (
     <Tabs
@@ -15,6 +19,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        animation: 'none',
       }}>
       <Tabs.Screen
         name="index"
@@ -35,6 +40,16 @@ export default function TabLayout() {
         options={{
           title: 'Account',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="dispatch"
+        options={{
+          title: 'Dispatch',
+          href: isStaff ? undefined : null,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="shippingbox.fill" color={color} />
+          ),
         }}
       />
     </Tabs>
