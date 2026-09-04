@@ -1,6 +1,6 @@
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import { OrderCard } from '@/components/order-card';
 import { useAuth } from '@/context/auth-context';
@@ -18,39 +18,46 @@ export type FirestoreOrder = {
   total: number;
   status: string;
   createdAt: any;
+  deliveryDate?: any;
+  approved?: boolean;
 };
 
 export default function OrdersScreen() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<FirestoreOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchOrders = useCallback(async () => {
+    if (!user) {
+      return;
+    }
+    try {
+      const q = query(
+        collection(db, 'orders'),
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as FirestoreOrder[];
+      setOrders(data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  }, [user]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const q = query(
-          collection(db, 'orders'),
-          where('userId', '==', user.uid),
-          orderBy('createdAt', 'desc')
-        );
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as FirestoreOrder[];
-        setOrders(data);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-      setLoading(false);
-    };
+    fetchOrders().then(() => setLoading(false));
+  }, [fetchOrders]);
 
-    fetchOrders();
-  }, [user]);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchOrders();
+    setRefreshing(false);
+  }, [fetchOrders]);
 
   if (!user) {
     return (
@@ -80,6 +87,9 @@ export default function OrdersScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <OrderCard order={item} />}
           contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1595B3']} />
+          }
         />
       )}
     </View>

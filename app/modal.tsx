@@ -15,6 +15,10 @@ export default function CartScreen() {
   const router = useRouter();
   const [instructions, setInstructions] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const recurringItem = items.find((item) => item.recurring);
+const deliveryDate = recurringItem
+  ? new Date(Date.now() + (recurringItem.frequencyWeeks || 1) * 7 * 24 * 60 * 60 * 1000)
+  : new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
 
   const handlePlaceOrder = async () => {
     if (!user) {
@@ -28,21 +32,23 @@ export default function CartScreen() {
 
     try {
       await addDoc(collection(db, 'orders'), {
-        userId: user.uid,
-        userEmail: user.email,
-        items: items.map((item) => ({
-          productId: item.product.id,
-          name: item.product.name,
-          price: item.product.price,
-          quantity: item.quantity,
-          recurring: item.recurring,
-          frequencyWeeks: item.frequencyWeeks,
-        })),
-        total,
-        status: 'Scheduled',
-        deliveryInstructions: instructions.trim(),
-        createdAt: serverTimestamp(),
-      });
+  userId: user.uid,
+  userEmail: user.email,
+  items: items.map((item) => ({
+    productId: item.product.id,
+    name: item.product.name,
+    price: item.product.price,
+    quantity: item.quantity,
+    recurring: item.recurring,
+    frequencyWeeks: item.frequencyWeeks,
+  })),
+  total,
+  status: 'Scheduled',
+  deliveryInstructions: instructions.trim(),
+  deliveryDate,
+  approved: false,
+  createdAt: serverTimestamp(),
+});
 
       const recurringItems = items.filter((item) => item.recurring);
       for (const item of recurringItems) {

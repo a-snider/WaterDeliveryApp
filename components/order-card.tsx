@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { FirestoreOrder } from '@/app/(tabs)/explore';
+import { DeliveryProgress } from '@/components/delivery-progress';
 
 const STATUS_COLORS: Record<string, string> = {
   Delivered: '#2E8B57',
@@ -12,6 +13,10 @@ export function OrderCard({ order }: { order: FirestoreOrder }) {
   const dateLabel = order.createdAt?.toDate
     ? order.createdAt.toDate().toLocaleDateString()
     : 'Pending';
+
+  const showProgress =
+    order.approved && order.deliveryDate?.toDate && order.status !== 'Delivered';
+
 
   return (
     <View style={styles.card}>
@@ -36,6 +41,13 @@ export function OrderCard({ order }: { order: FirestoreOrder }) {
       ))}
 
       <Text style={styles.total}>${order.total.toFixed(2)}</Text>
+
+      {showProgress && (
+        <DeliveryProgress
+          createdAt={order.createdAt.toDate()}
+          deliveryDate={order.deliveryDate.toDate()}
+        />
+      )}
     </View>
   );
 }
