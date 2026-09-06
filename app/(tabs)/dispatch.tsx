@@ -12,7 +12,6 @@ import {
 
 import { db } from '@/firebase/config';
 import { sendPushNotification } from '@/firebase/notifications';
-import { Alert } from 'react-native';
 
 type DispatchOrder = {
   id: string;
@@ -76,22 +75,20 @@ export default function DispatchScreen() {
   await updateDoc(doc(db, 'orders', order.id), { status: nextStatus });
 
   if (nextStatus === 'Delivered') {
-    try {
-      const userDoc = await getDoc(doc(db, 'users', order.userId));
-      const pushToken = userDoc.data()?.pushToken;
-      Alert.alert('Debug', 'Token found: ' + (pushToken || 'NONE'));
-      if (pushToken) {
-        const result = await sendPushNotification(
-          pushToken,
-          'Delivered! 💧',
-          'Your Mountain Park Spring Water order has arrived.'
-        );
-        Alert.alert('Debug', 'Push result: ' + JSON.stringify(result));
-      }
-    } catch (error: any) {
-      Alert.alert('Debug Error', error.message);
+  try {
+    const userDoc = await getDoc(doc(db, 'users', order.userId));
+    const pushToken = userDoc.data()?.pushToken;
+    if (pushToken) {
+      await sendPushNotification(
+        pushToken,
+        'Delivered! 💧',
+        'Your Mountain Park Spring Water order has arrived.'
+      );
     }
+  } catch (error) {
+    console.error('Error sending delivery notification:', error);
   }
+}
 
   fetchOrders();
 };

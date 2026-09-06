@@ -23,6 +23,13 @@ export async function registerForPushNotifications(userId: string) {
     return;
   }
 
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+    });
+  }
+
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
 
@@ -43,13 +50,6 @@ export async function registerForPushNotifications(userId: string) {
   console.log('Got push token:', pushToken);
 
   await setDoc(doc(db, 'users', userId), { pushToken }, { merge: true });
-
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-    });
-  }
 
   return pushToken;
 }
