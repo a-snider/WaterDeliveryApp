@@ -4,7 +4,7 @@
     "slug": "WaterDeliveryApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.jpg",
+    "icon": "./assets/images/icon-square.png",
     "scheme": "waterdeliveryapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#0B2E4F",
-        "foregroundImage": "./assets/images/logo.jpg"
+        "foregroundImage": "./assets/images/icon-square.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
