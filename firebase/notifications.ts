@@ -16,6 +16,8 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotifications(userId: string) {
+  console.log('Attempting to register push notifications for:', userId);
+
   if (!Device.isDevice) {
     console.log('Push notifications require a physical device.');
     return;
@@ -35,9 +37,10 @@ export async function registerForPushNotifications(userId: string) {
   }
 
   const tokenData = await Notifications.getExpoPushTokenAsync({
-  projectId: '1e8bca61-a200-4e8a-a264-e610f63fb427',
-});
+    projectId: '1e8bca61-a200-4e8a-a264-e610f63fb427',
+  });
   const pushToken = tokenData.data;
+  console.log('Got push token:', pushToken);
 
   await setDoc(doc(db, 'users', userId), { pushToken }, { merge: true });
 
@@ -52,7 +55,7 @@ export async function registerForPushNotifications(userId: string) {
 }
 
 export async function sendPushNotification(pushToken: string, title: string, body: string) {
-  await fetch('https://exp.host/--/api/v2/push/send', {
+  const response = await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -65,4 +68,7 @@ export async function sendPushNotification(pushToken: string, title: string, bod
       body,
     }),
   });
+  const data = await response.json();
+  console.log('Expo push API response:', JSON.stringify(data));
+  return data;
 }

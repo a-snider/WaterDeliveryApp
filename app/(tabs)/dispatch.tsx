@@ -12,6 +12,7 @@ import {
 
 import { db } from '@/firebase/config';
 import { sendPushNotification } from '@/firebase/notifications';
+import { Alert } from 'react-native';
 
 type DispatchOrder = {
   id: string;
@@ -78,15 +79,17 @@ export default function DispatchScreen() {
     try {
       const userDoc = await getDoc(doc(db, 'users', order.userId));
       const pushToken = userDoc.data()?.pushToken;
+      Alert.alert('Debug', 'Token found: ' + (pushToken || 'NONE'));
       if (pushToken) {
-        await sendPushNotification(
+        const result = await sendPushNotification(
           pushToken,
           'Delivered! 💧',
           'Your Mountain Park Spring Water order has arrived.'
         );
+        Alert.alert('Debug', 'Push result: ' + JSON.stringify(result));
       }
-    } catch (error) {
-      console.error('Error sending delivery notification:', error);
+    } catch (error: any) {
+      Alert.alert('Debug Error', error.message);
     }
   }
 
