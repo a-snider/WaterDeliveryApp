@@ -34,7 +34,9 @@ export async function registerForPushNotifications(userId: string) {
     return;
   }
 
-  const tokenData = await Notifications.getExpoPushTokenAsync();
+  const tokenData = await Notifications.getExpoPushTokenAsync({
+  projectId: '1e8bca61-a200-4e8a-a264-e610f63fb427',
+});
   const pushToken = tokenData.data;
 
   await setDoc(doc(db, 'users', userId), { pushToken }, { merge: true });
