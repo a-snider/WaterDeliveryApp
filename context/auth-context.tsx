@@ -2,6 +2,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { auth } from '@/firebase/config';
+import { registerForPushNotifications } from '@/firebase/notifications';
 
 type AuthContextType = {
   user: User | null;
@@ -18,6 +19,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+      if (firebaseUser) {
+        registerForPushNotifications(firebaseUser.uid);
+      }
     });
 
     return unsubscribe;

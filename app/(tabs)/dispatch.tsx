@@ -1,19 +1,21 @@
-import { collection, doc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import { db } from '@/firebase/config';
+import { sendPushNotification } from '@/firebase/notifications';
 
 type DispatchOrder = {
   id: string;
+  userId: string;
   userEmail: string;
   items: { name: string; quantity: number; recurring?: boolean; frequencyWeeks?: number | null }[];
   total: number;
@@ -66,12 +68,30 @@ export default function DispatchScreen() {
   };
 
   const advanceStatus = async (order: DispatchOrder) => {
-    const currentIndex = STATUS_FLOW.indexOf(order.status);
-    const nextStatus = STATUS_FLOW[currentIndex + 1];
-    if (!nextStatus) return;
-    await updateDoc(doc(db, 'orders', order.id), { status: nextStatus });
-    fetchOrders();
-  };
+  const currentIndex = STATUS_FLOW.indexOf(order.status);
+  const nextStatus = STATUS_FLOW[currentIndex + 1];
+  if (!nextStatus) return;
+
+  await updateDoc(doc(db, 'orders', order.id), { status: nextStatus });
+
+  if (nextStatus === 'Delivered') {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', order.userId));
+      const pushToken = userDoc.data()?.pushToken;
+      if (pushToken) {
+        await sendPushNotification(
+          pushToken,
+          'Delivered! 💧',
+          'Your Mountain Park Spring Water order has arrived.'
+        );
+      }
+    } catch (error) {
+      console.error('Error sending delivery notification:', error);
+    }
+  }
+
+  fetchOrders();
+};
 
   if (loading) {
     return (

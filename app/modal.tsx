@@ -8,6 +8,7 @@ import { OrderSuccess } from '@/components/order-success';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { db } from '@/firebase/config';
+import * as Notifications from 'expo-notifications';
 
 export default function CartScreen() {
   const { items, removeFromCart, clearCart, total } = useCart();
@@ -64,6 +65,22 @@ const deliveryDate = recurringItem
           createdAt: serverTimestamp(),
         });
       }
+      const jugItems = items.filter((item) => item.product.name.toLowerCase().includes('5 gallon'));
+if (jugItems.length > 0) {
+  const reminderDate = new Date(deliveryDate.getTime() - 24 * 60 * 60 * 1000);
+  if (reminderDate.getTime() > Date.now()) {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Delivery Tomorrow 🚚',
+        body: 'Your 5-gallon jug delivery arrives tomorrow!',
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: reminderDate,
+      },
+    });
+  }
+}
 
       clearCart();
       setInstructions('');
