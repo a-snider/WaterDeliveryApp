@@ -16,16 +16,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
-      if (firebaseUser) {
-        registerForPushNotifications(firebaseUser.uid);
-      }
-    });
+  const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    console.log('AUTH STATE:', firebaseUser?.uid);
 
-    return unsubscribe;
-  }, []);
+    setUser(firebaseUser);
+    setLoading(false);
+
+    if (firebaseUser) {
+      console.log('STARTING PUSH REGISTRATION');
+
+      registerForPushNotifications(firebaseUser.uid)
+        .then((token) => {
+          console.log('PUSH REGISTRATION RESULT:', token);
+        })
+        .catch((error) => {
+          console.error('PUSH REGISTRATION ERROR:', error);
+        });
+    }
+  });
+
+  return unsubscribe;
+}, []);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

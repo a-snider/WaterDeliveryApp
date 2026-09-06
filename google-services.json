@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "280455418588",
+    "project_id": "mountainparkspringwater-a873b",
+    "storage_bucket": "mountainparkspringwater-a873b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280455418588:android:be28c9fdde45ecbf08da19",
+        "android_client_info": {
+          "package_name": "com.mountainparkspringwater.waterdeliveryapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXuiHakAAw6NJ-8K-qC-7tzaIKjnlOrvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

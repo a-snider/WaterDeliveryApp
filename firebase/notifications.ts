@@ -66,6 +66,7 @@ export async function sendPushNotification(pushToken: string, title: string, bod
       sound: 'default',
       title,
       body,
+      channelId: 'default',
     }),
   });
   const data = await response.json();

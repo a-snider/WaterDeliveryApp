@@ -12,33 +12,41 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#0B2E4F",
-        "foregroundImage": "./assets/images/icon-square.png"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.mountainparkspringwater.waterdeliveryapp"
-    },
+  "adaptiveIcon": {
+    "backgroundColor": "#0B2E4F",
+    "foregroundImage": "./assets/images/icon-square.png"
+  },
+  "edgeToEdgeEnabled": true,
+  "predictiveBackGestureEnabled": false,
+  "package": "com.mountainparkspringwater.waterdeliveryapp",
+  "googleServicesFile": "./google-services.json"
+},
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/logo.jpg",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#0B2E4F",
-          "dark": {
-            "backgroundColor": "#0B2E4F"
-          }
-        }
-      ]
-    ],
+  "expo-router",
+  [
+    "expo-notifications",
+    {
+      "icon": "./assets/images/icon-square.png",
+      "color": "#0B2E4F"
+    }
+  ],
+  [
+    "expo-splash-screen",
+    {
+      "image": "./assets/images/logo.jpg",
+      "imageWidth": 200,
+      "resizeMode": "contain",
+      "backgroundColor": "#0B2E4F",
+      "dark": {
+        "backgroundColor": "#0B2E4F"
+      }
+    }
+  ]
+],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
