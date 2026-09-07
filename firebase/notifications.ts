@@ -67,6 +67,7 @@ export async function sendPushNotification(pushToken: string, title: string, bod
       title,
       body,
       channelId: 'default',
+      priority: 'high',
     }),
   });
   const data = await response.json();
